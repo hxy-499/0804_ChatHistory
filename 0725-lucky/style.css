@@ -1,326 +1,114 @@
-/* 转盘相关样式 */
-#wheel {
-    transition: transform 4s cubic-bezier(0.25, 0.1, 0.25, 1);
-    transform-origin: center center;
+/* 自定义动画延迟 */
+.animation-delay-2000 {
+    animation-delay: 2s;
 }
 
-/* 转盘旋转动画 */
-.spinning {
-    animation: spin-wheel 4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+.animation-delay-4000 {
+    animation-delay: 4s;
 }
 
-@keyframes spin-wheel {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(var(--final-rotation, 1800deg));
-    }
-}
-
-/* 转盘扇形区域样式 */
-.wheel-segment {
-    transform-origin: center center;
-}
-
-.segment-1 {
-    background: linear-gradient(135deg, #ffd700, #ffed4e);
-    transform: rotate(0deg);
-}
-
-.segment-2 {
-    background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
-    transform: rotate(60deg);
-}
-
-.segment-3 {
-    background: linear-gradient(135deg, #4ecdc4, #45b7aa);
-    transform: rotate(120deg);
-}
-
-.segment-4 {
-    background: linear-gradient(135deg, #45b7d1, #96c5f7);
-    transform: rotate(180deg);
-}
-
-.segment-5 {
-    background: linear-gradient(135deg, #96ceb4, #85c1a5);
-    transform: rotate(240deg);
-}
-
-.segment-6 {
-    background: linear-gradient(135deg, #cc8e35, #f39801);
-    transform: rotate(300deg);
-}
-
-/* 扇形内容样式 */
-.segment-content {
-    position: absolute;
-    top: 20%;
-    left: 50%;
-    transform: translateX(-50%);
-    color: white;
-    font-weight: bold;
-    font-size: 14px;
-    text-align: center;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    width: 80px;
-}
-
-/* 让每个扇形的文字保持正确方向 */
-.segment-1 .segment-content {
-    transform: translateX(-50%) rotate(30deg);
-}
-
-.segment-2 .segment-content {
-    transform: translateX(-50%) rotate(-30deg);
-}
-
-.segment-3 .segment-content {
-    transform: translateX(-50%) rotate(-90deg);
-}
-
-.segment-4 .segment-content {
-    transform: translateX(-50%) rotate(-150deg);
-}
-
-.segment-5 .segment-content {
-    transform: translateX(-50%) rotate(-210deg);
-}
-
-.segment-6 .segment-content {
-    transform: translateX(-50%) rotate(-270deg);
-}
-
-/* 弹窗动画 */
-#result-modal.show {
-    display: flex !important;
-    animation: modal-fade-in 0.3s ease-out;
-}
-
-#result-modal.show #modal-content {
-    animation: modal-scale-in 0.3s ease-out;
-}
-
-@keyframes modal-fade-in {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes modal-scale-in {
-    from {
-        transform: scale(0.8);
-        opacity: 0;
-    }
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-/* 恭喜动画 */
-.congratulations {
-    animation: congratulations-bounce 0.6s ease-in-out;
-}
-
-@keyframes congratulations-bounce {
-    0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0);
-    }
-    40% {
-        transform: translateY(-10px);
-    }
-    60% {
-        transform: translateY(-5px);
-    }
-}
-
-/* 中奖特效 */
-.winner-effect {
+/* 奖品轮播样式 */
+.prize-carousel {
     position: relative;
-    overflow: visible;
+    height: 200px;
+    overflow: hidden;
 }
 
-.winner-effect::before {
+.prize-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.5s ease-in-out;
+}
+
+.prize-item.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.prize-item.prev {
+    opacity: 0;
+    transform: translateX(-100%);
+}
+
+/* 轮播指示器 */
+.carousel-dot {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.carousel-dot.active {
+    background-color: white;
+    transform: scale(1.2);
+}
+
+.carousel-dot:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* 抽奖按钮悬停发光效果 */
+#lotteryBtn {
+    position: relative;
+    overflow: hidden;
+}
+
+#lotteryBtn::before {
     content: '';
     position: absolute;
-    top: -10px;
-    left: -10px;
-    right: -10px;
-    bottom: -10px;
-    background: linear-gradient(45deg, #ffd700, #ff6b6b, #4ecdc4, #45b7d1);
-    background-size: 400% 400%;
-    border-radius: inherit;
-    z-index: -1;
-    animation: winner-glow 2s ease-in-out infinite;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
 }
 
-@keyframes winner-glow {
-    0%, 100% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
+#lotteryBtn:hover::before {
+    left: 100%;
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-    #wheel-container {
-        width: 250px !important;
-        height: 250px !important;
-    }
-    
-    .segment-content {
-        font-size: 12px;
-        width: 60px;
-    }
-    
-    .segment-content i {
-        font-size: 1.2rem !important;
-    }
+/* 抽奖动画 */
+@keyframes lottery-spin {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.1); }
+    100% { transform: rotate(360deg) scale(1); }
 }
 
-@media (max-width: 480px) {
-    #wheel-container {
-        width: 200px !important;
-        height: 200px !important;
+.lottery-spinning {
+    animation: lottery-spin 2s ease-in-out;
+}
+
+/* 中奖结果动画 */
+@keyframes result-bounce {
+    0%, 20%, 53%, 80%, 100% {
+        transform: translate3d(0, 0, 0);
     }
-    
-    .segment-content {
-        font-size: 10px;
-        width: 50px;
-        gap: 4px;
+    40%, 43% {
+        transform: translate3d(0, -20px, 0);
     }
-    
-    .segment-content i {
-        font-size: 1rem !important;
+    70% {
+        transform: translate3d(0, -10px, 0);
+    }
+    90% {
+        transform: translate3d(0, -4px, 0);
     }
 }
 
-/* 输入框聚焦效果 */
-input:focus {
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+.result-animation {
+    animation: result-bounce 1s ease-out;
 }
 
-/* 按钮点击效果 */
-button:active {
-    transform: scale(0.98);
-}
-
-/* 禁用状态样式 */
-button:disabled {
-    cursor: not-allowed !important;
-    opacity: 0.6 !important;
-}
-
-/* 加载动画 */
-.loading-spinner {
-    border: 3px solid #f3f3f3;
-    border-top: 3px solid #3498db;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    animation: spin-loading 1s linear infinite;
-    display: inline-block;
-    margin-right: 8px;
-}
-
-@keyframes spin-loading {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* 成功提示样式 */
-.success-message {
-    background: linear-gradient(45deg, #4CAF50, #45a049);
-    color: white;
-    padding: 12px 24px;
-    border-radius: 8px;
-    margin-top: 16px;
-    display: none;
-    animation: success-fade-in 0.5s ease-out;
-}
-
-@keyframes success-fade-in {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* 错误提示样式 */
-.error-message {
-    background: linear-gradient(45deg, #f44336, #d32f2f);
-    color: white;
-    padding: 12px 24px;
-    border-radius: 8px;
-    margin-top: 16px;
-    display: none;
-    animation: error-shake 0.5s ease-out;
-}
-
-@keyframes error-shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
-}
-
-/* 烟花效果 */
-.firework {
-    position: fixed;
-    pointer-events: none;
-    z-index: 1000;
-}
-
-.firework::before {
-    content: '✨';
-    font-size: 20px;
-    animation: firework-explode 1s ease-out forwards;
-}
-
-@keyframes firework-explode {
-    0% {
-        transform: scale(0) rotate(0deg);
-        opacity: 1;
-    }
-    100% {
-        transform: scale(2) rotate(180deg);
-        opacity: 0;
-    }
-}
-
-/* 彩带效果 */
+/* 彩带特效样式 */
 .confetti {
-    position: fixed;
+    position: absolute;
     width: 10px;
     height: 10px;
-    background: #f39801;
-    pointer-events: none;
-    z-index: 999;
-    animation: confetti-fall 3s linear forwards;
-}
-
-.confetti:nth-child(odd) {
-    background: #ffd700;
-    animation-delay: -0.5s;
-}
-
-.confetti:nth-child(even) {
-    background: #ff6b6b;
-    animation-delay: -1s;
+    background: #f0f;
+    animation: confetti-fall 3s linear infinite;
 }
 
 @keyframes confetti-fall {
@@ -334,45 +122,151 @@ button:disabled {
     }
 }
 
-/* 渐变文字效果 */
-.gradient-text {
-    background: linear-gradient(45deg, #ffd700, #ff6b6b, #4ecdc4);
-    background-size: 200% 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: gradient-shift 3s ease-in-out infinite;
-}
+/* 彩带颜色变体 */
+.confetti-red { background: #ff6b6b; }
+.confetti-yellow { background: #ffd93d; }
+.confetti-blue { background: #6bcf7f; }
+.confetti-purple { background: #a29bfe; }
+.confetti-orange { background: #fd79a8; }
+.confetti-green { background: #00b894; }
 
-@keyframes gradient-shift {
-    0%, 100% {
-        background-position: 0% 50%;
+/* 闪烁文字效果 */
+@keyframes glow {
+    0%, 100% { 
+        text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #ff6b6b;
     }
-    50% {
-        background-position: 100% 50%;
+    50% { 
+        text-shadow: 0 0 2px #fff, 0 0 5px #fff, 0 0 8px #fff, 0 0 12px #ff6b6b;
     }
 }
 
-/* 鼠标悬停效果增强 */
-.hover-lift {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+.glow-text {
+    animation: glow 2s ease-in-out infinite alternate;
 }
 
-.hover-lift:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+/* 表单验证样式 */
+.input-error {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
 }
 
-/* 脉冲动画 */
-.pulse-slow {
-    animation: pulse-slow 3s ease-in-out infinite;
+.error-message {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
 }
 
-@keyframes pulse-slow {
-    0%, 100% {
+/* 成功提示样式 */
+.success-message {
+    background: linear-gradient(45deg, #10b981, #059669);
+    border: 2px solid #047857;
+    color: white;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    text-align: center;
+    font-weight: 600;
+    animation: result-bounce 1s ease-out;
+}
+
+/* 失败提示样式 */
+.fail-message {
+    background: linear-gradient(45deg, #6b7280, #4b5563);
+    border: 2px solid #374151;
+    color: white;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    text-align: center;
+    font-weight: 600;
+    animation: result-bounce 1s ease-out;
+}
+
+/* 禁用按钮样式 */
+.btn-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.btn-disabled:hover {
+    transform: none !important;
+    background: linear-gradient(to right, #fbbf24, #f59e0b) !important;
+}
+
+/* 历史记录动画 */
+@keyframes slide-in {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
         opacity: 1;
+        transform: translateY(0);
     }
-    50% {
-        opacity: 0.7;
+}
+
+.history-item {
+    animation: slide-in 0.5s ease-out;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .prize-carousel {
+        height: 180px;
     }
+    
+    .confetti {
+        width: 8px;
+        height: 8px;
+    }
+}
+
+/* 加载动画 */
+@keyframes loading-dots {
+    0%, 20% {
+        color: rgba(255, 255, 255, 0.4);
+        text-shadow: .25em 0 0 rgba(255, 255, 255, 0.4),
+                     .5em 0 0 rgba(255, 255, 255, 0.4);
+    }
+    40% {
+        color: white;
+        text-shadow: .25em 0 0 rgba(255, 255, 255, 0.4),
+                     .5em 0 0 rgba(255, 255, 255, 0.4);
+    }
+    60% {
+        text-shadow: .25em 0 0 white,
+                     .5em 0 0 rgba(255, 255, 255, 0.4);
+    }
+    80%, 100% {
+        text-shadow: .25em 0 0 white,
+                     .5em 0 0 white;
+    }
+}
+
+.loading-dots::after {
+    content: "...";
+    animation: loading-dots 1.5s infinite;
+}
+
+/* 平滑滚动 */
+html {
+    scroll-behavior: smooth;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
 } 
