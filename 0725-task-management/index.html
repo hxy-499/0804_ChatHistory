@@ -21,25 +21,33 @@
 
         <!-- 统计面板 -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+            <div class="bg-white rounded-lg shadow-md p-6 text-center cursor-pointer hover:shadow-lg transition-all duration-300 stats-card" 
+                 id="stats-total" 
+                 title="点击查看所有任务">
                 <div class="text-3xl font-bold text-blue-600" id="total-tasks">0</div>
                 <div class="text-gray-600 mt-2">
                     <i class="fas fa-list mr-2"></i>总任务数
                 </div>
             </div>
-            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+            <div class="bg-white rounded-lg shadow-md p-6 text-center cursor-pointer hover:shadow-lg transition-all duration-300 stats-card" 
+                 id="stats-pending" 
+                 title="点击筛选待办任务">
                 <div class="text-3xl font-bold text-yellow-600" id="pending-tasks">0</div>
                 <div class="text-gray-600 mt-2">
                     <i class="fas fa-clock mr-2"></i>待办任务
                 </div>
             </div>
-            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+            <div class="bg-white rounded-lg shadow-md p-6 text-center cursor-pointer hover:shadow-lg transition-all duration-300 stats-card" 
+                 id="stats-in-progress" 
+                 title="点击筛选进行中任务">
                 <div class="text-3xl font-bold text-blue-500" id="in-progress-tasks">0</div>
                 <div class="text-gray-600 mt-2">
                     <i class="fas fa-play mr-2"></i>进行中
                 </div>
             </div>
-            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+            <div class="bg-white rounded-lg shadow-md p-6 text-center cursor-pointer hover:shadow-lg transition-all duration-300 stats-card" 
+                 id="stats-completed" 
+                 title="点击筛选已完成任务">
                 <div class="text-3xl font-bold text-green-600" id="completed-tasks">0</div>
                 <div class="text-gray-600 mt-2">
                     <i class="fas fa-check mr-2"></i>已完成
@@ -62,15 +70,22 @@
             <form id="task-form" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="task-title" class="block text-sm font-medium text-gray-700 mb-2">任务标题</label>
+                        <label for="task-title" class="block text-sm font-medium text-gray-700 mb-2">
+                            任务标题
+                            <span class="text-red-500 ml-1" title="此项为必填">*</span>
+                        </label>
                         <input type="text" id="task-title" required 
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                placeholder="请输入任务标题">
                     </div>
                     <div>
-                        <label for="task-priority" class="block text-sm font-medium text-gray-700 mb-2">优先级</label>
-                        <select id="task-priority" 
+                        <label for="task-priority" class="block text-sm font-medium text-gray-700 mb-2">
+                            优先级
+                            <span class="text-red-500 ml-1" title="此项为必填">*</span>
+                        </label>
+                        <select id="task-priority" required
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">请选择优先级</option>
                             <option value="low">低优先级</option>
                             <option value="medium" selected>中优先级</option>
                             <option value="high">高优先级</option>
@@ -87,8 +102,11 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="task-due-date" class="block text-sm font-medium text-gray-700 mb-2">截止日期</label>
-                        <input type="date" id="task-due-date" 
+                        <label for="task-due-date" class="block text-sm font-medium text-gray-700 mb-2">
+                            截止日期
+                            <span class="text-red-500 ml-1" title="此项为必填">*</span>
+                        </label>
+                        <input type="date" id="task-due-date" required
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                     </div>
                     <div class="flex items-end">
@@ -179,15 +197,22 @@
                     <input type="hidden" id="edit-task-id">
                     
                     <div>
-                        <label for="edit-task-title" class="block text-sm font-medium text-gray-700 mb-2">任务标题</label>
+                        <label for="edit-task-title" class="block text-sm font-medium text-gray-700 mb-2">
+                            任务标题
+                            <span class="text-red-500 ml-1" title="此项为必填">*</span>
+                        </label>
                         <input type="text" id="edit-task-title" required 
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                     </div>
                     
                     <div>
-                        <label for="edit-task-priority" class="block text-sm font-medium text-gray-700 mb-2">优先级</label>
-                        <select id="edit-task-priority" 
+                        <label for="edit-task-priority" class="block text-sm font-medium text-gray-700 mb-2">
+                            优先级
+                            <span class="text-red-500 ml-1" title="此项为必填">*</span>
+                        </label>
+                        <select id="edit-task-priority" required
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">请选择优先级</option>
                             <option value="low">低优先级</option>
                             <option value="medium">中优先级</option>
                             <option value="high">高优先级</option>
@@ -201,8 +226,11 @@
                     </div>
                     
                     <div>
-                        <label for="edit-task-due-date" class="block text-sm font-medium text-gray-700 mb-2">截止日期</label>
-                        <input type="date" id="edit-task-due-date" 
+                        <label for="edit-task-due-date" class="block text-sm font-medium text-gray-700 mb-2">
+                            截止日期
+                            <span class="text-red-500 ml-1" title="此项为必填">*</span>
+                        </label>
+                        <input type="date" id="edit-task-due-date" required
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                     </div>
                     
