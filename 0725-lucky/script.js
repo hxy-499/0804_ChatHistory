@@ -2,7 +2,7 @@
 class LotteryApp {
     constructor() {
         this.currentSlide = 0;
-        this.maxTries = 3;
+        this.maxTries = 30;
         this.userTries = 0;
         this.isLotteryRunning = false;
         
@@ -73,6 +73,25 @@ class LotteryApp {
         // 姓名输入框失焦验证
         document.getElementById('userName').addEventListener('blur', () => {
             this.validateName();
+        });
+
+        // 转盘模态框点击背景关闭（仅在非抽奖状态）
+        document.getElementById('wheelModal').addEventListener('click', (e) => {
+            if (e.target.id === 'wheelModal' && !this.isLotteryRunning) {
+                this.hideWheelModal();
+            }
+        });
+
+        // 防止转盘内容区域点击冒泡
+        document.querySelector('#wheelModal > div').addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // ESC键关闭转盘模态框（仅在非抽奖状态）
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !document.getElementById('wheelModal').classList.contains('hidden') && !this.isLotteryRunning) {
+                this.hideWheelModal();
+            }
         });
     }
 
@@ -192,11 +211,8 @@ class LotteryApp {
         btnText.textContent = '抽奖中';
         btnText.classList.add('loading-dots');
 
-        // 模拟抽奖过程
-        await this.sleep(2000);
-
-        // 计算中奖结果
-        const result = this.calculatePrize();
+        // 显示转盘抽奖过程
+        const result = await this.showWheelLottery();
         
         // 恢复按钮状态
         btn.classList.remove('lottery-spinning');
@@ -221,6 +237,88 @@ class LotteryApp {
 
         this.updateUI();
         this.isLotteryRunning = false;
+    }
+
+    // 显示转盘抽奖过程
+    async showWheelLottery() {
+        return new Promise((resolve) => {
+            // 计算中奖结果
+            const result = this.calculatePrize();
+            const prizeIndex = result.isWin ? this.prizes.findIndex(p => p.name === result.prize.name) : 3; // 默认纪念奖
+            
+            // 显示转盘模态框
+            const wheelModal = document.getElementById('wheelModal');
+            const wheelSpin = document.getElementById('wheelSpin');
+            const wheelStatus = document.getElementById('wheelStatus');
+            
+            wheelModal.classList.remove('hidden');
+            wheelModal.classList.add('modal-enter');
+            
+            // 计算最终旋转角度
+            // 每个扇形90度，根据奖品索引计算目标角度
+            const baseAngle = 90 * prizeIndex; // 基础角度
+            const randomOffset = Math.random() * 60 + 15; // 15-75度的随机偏移
+            const finalAngle = baseAngle + randomOffset + 360 * 5; // 至少转5圈
+            
+            // 设置CSS变量用于动画
+            wheelSpin.style.setProperty('--final-rotation', `${finalAngle}deg`);
+            
+            // 开始转盘旋转
+            setTimeout(() => {
+                wheelSpin.classList.add('wheel-spinning');
+                wheelStatus.innerHTML = '<span class="loading-dots">转盘旋转中</span>';
+            }, 500);
+            
+            // 动画完成后的处理
+            setTimeout(() => {
+                // 高亮中奖区域
+                this.highlightWinningSegment(prizeIndex);
+                wheelStatus.innerHTML = `<span class="glow-text">🎉 ${result.isWin ? result.prize.name : '纪念奖'}！🎉</span>`;
+                
+                // 延迟后隐藏转盘
+                setTimeout(() => {
+                    this.hideWheelModal();
+                    resolve(result);
+                }, 2000);
+            }, 3500); // 转盘动画3秒 + 0.5秒延迟
+        });
+    }
+
+    // 高亮中奖扇形区域
+    highlightWinningSegment(prizeIndex) {
+        const segments = document.querySelectorAll('.wheel-segment');
+        segments.forEach((segment, index) => {
+            if (index === prizeIndex) {
+                segment.classList.add('wheel-result-highlight');
+            }
+        });
+    }
+
+    // 隐藏转盘模态框
+    hideWheelModal() {
+        const wheelModal = document.getElementById('wheelModal');
+        const wheelSpin = document.getElementById('wheelSpin');
+        
+        wheelModal.classList.add('modal-exit');
+        
+        setTimeout(() => {
+            wheelModal.classList.add('hidden');
+            wheelModal.classList.remove('modal-enter', 'modal-exit');
+            
+            // 重置转盘状态
+            wheelSpin.classList.remove('wheel-spinning');
+            wheelSpin.style.removeProperty('--final-rotation');
+            
+            // 移除高亮效果
+            const segments = document.querySelectorAll('.wheel-segment');
+            segments.forEach(segment => {
+                segment.classList.remove('wheel-result-highlight');
+            });
+            
+            // 重置状态文字
+            const wheelStatus = document.getElementById('wheelStatus');
+            wheelStatus.innerHTML = '<span class="loading-dots">正在抽奖中</span>';
+        }, 300);
     }
 
     // 计算中奖结果
