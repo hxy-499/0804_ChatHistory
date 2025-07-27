@@ -45,6 +45,75 @@ body {
     animation: breathe 4s ease-in-out infinite;
 }
 
+/* 标题发光效果 */
+.title-glow {
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.4),
+                 0 0 30px rgba(255, 255, 255, 0.2),
+                 0 0 45px rgba(255, 255, 255, 0.1);
+    animation: titlePulse 6s ease-in-out infinite;
+}
+
+/* 标题脉动动画 */
+@keyframes titlePulse {
+    0%, 100% {
+        text-shadow: 0 0 15px rgba(255, 255, 255, 0.4),
+                     0 0 30px rgba(255, 255, 255, 0.2),
+                     0 0 45px rgba(255, 255, 255, 0.1);
+        transform: scale(1);
+    }
+    50% {
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.6),
+                     0 0 40px rgba(255, 255, 255, 0.3),
+                     0 0 60px rgba(255, 255, 255, 0.15);
+        transform: scale(1.01);
+    }
+}
+
+/* 番茄图标动画 */
+#tomato-logo {
+    animation: tomatoSpin 8s ease-in-out infinite;
+}
+
+@keyframes tomatoSpin {
+    0%, 100% {
+        transform: rotate(0deg) scale(1);
+    }
+    25% {
+        transform: rotate(5deg) scale(1.05);
+    }
+    75% {
+        transform: rotate(-5deg) scale(1.05);
+    }
+}
+
+/* 中央番茄图标动画 */
+#center-tomato {
+    animation: centerTomatoBounce 3s ease-in-out infinite;
+}
+
+@keyframes centerTomatoBounce {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+    }
+    50% {
+        transform: scale(1.1) rotate(5deg);
+    }
+}
+
+/* 工作状态下番茄图标加速旋转 */
+.work-mode #tomato-logo {
+    animation: tomatoWorkSpin 4s ease-in-out infinite;
+}
+
+@keyframes tomatoWorkSpin {
+    0%, 100% {
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        transform: rotate(10deg) scale(1.1);
+    }
+}
+
 /* 呼吸动画 */
 @keyframes breathe {
     0%, 100% {
@@ -150,6 +219,18 @@ button:active {
         font-size: 3rem !important;
     }
     
+    .title-glow {
+        font-size: 1.5rem !important;
+    }
+    
+    #tomato-logo {
+        font-size: 2rem !important;
+    }
+    
+    #center-tomato {
+        font-size: 1.25rem !important;
+    }
+    
     #main-container .relative.w-80.h-80 {
         width: 250px !important;
         height: 250px !important;
@@ -160,8 +241,20 @@ button:active {
         height: 250px !important;
     }
     
-    .absolute.top-8 {
-        top: 1rem !important;
+    .text-center.mb-8.mt-16 {
+        margin-top: 2rem !important;
+    }
+    
+    .absolute.top-4 {
+        top: 0.5rem !important;
+    }
+    
+    .absolute.top-20 {
+        top: 4rem !important;
+    }
+    
+    .absolute.top-36 {
+        top: 7rem !important;
     }
     
     .absolute.bottom-8 {
@@ -209,17 +302,27 @@ button:active {
 }
 
 /* 聚焦模式下的样式调整 */
-.focus-mode .absolute.top-8,
+.focus-mode .absolute.top-4,
 .focus-mode .absolute.top-20,
+.focus-mode .absolute.top-36,
 .focus-mode .absolute.bottom-8 {
     opacity: 0.3;
     transition: opacity 0.3s ease-in-out;
 }
 
-.focus-mode:hover .absolute.top-8,
+.focus-mode:hover .absolute.top-4,
 .focus-mode:hover .absolute.top-20,
+.focus-mode:hover .absolute.top-36,
 .focus-mode:hover .absolute.bottom-8 {
     opacity: 1;
+}
+
+/* 专注模式下番茄图标动画暂停 */
+.focus-mode #tomato-logo,
+.focus-mode #center-tomato {
+    animation-play-state: paused;
+    opacity: 0.5;
+    transition: opacity 0.3s ease-in-out;
 }
 
 /* 自定义滚动条 */

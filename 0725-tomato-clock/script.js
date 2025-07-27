@@ -57,6 +57,9 @@ class PomodoroTimer {
             settingsBtn: document.getElementById('settings-btn'),
             settingsModal: document.getElementById('settings-modal'),
             sessionIndicators: document.getElementById('session-indicators'),
+            tomatoCount: document.getElementById('tomato-count'),
+            tomatoLogo: document.getElementById('tomato-logo'),
+            centerTomato: document.getElementById('center-tomato'),
             workDuration: document.getElementById('work-duration'),
             shortBreakDuration: document.getElementById('short-break-duration'),
             longBreakDuration: document.getElementById('long-break-duration'),
@@ -311,31 +314,42 @@ class PomodoroTimer {
         
         let statusText = '';
         let statusClass = '';
+        let tomatoCountText = '';
         
         switch (this.currentState) {
             case this.STATES.WORK:
                 statusText = '专注工作';
                 statusClass = 'status-dot-work';
+                tomatoCountText = `第${this.currentSession}个番茄`;
                 break;
             case this.STATES.SHORT_BREAK:
                 statusText = '短休息';
                 statusClass = 'status-dot-short-break';
+                tomatoCountText = `完成${this.currentSession}个番茄`;
                 break;
             case this.STATES.LONG_BREAK:
                 statusText = '长休息';
                 statusClass = 'status-dot-long-break';
+                tomatoCountText = `完成4个番茄循环`;
                 break;
             case this.STATES.PAUSED:
                 statusText = '已暂停';
                 statusClass = 'status-dot-ready';
+                if (this.previousState === this.STATES.WORK) {
+                    tomatoCountText = `第${this.currentSession}个番茄`;
+                } else {
+                    tomatoCountText = `完成${this.currentSession}个番茄`;
+                }
                 break;
             default:
                 statusText = '准备开始';
                 statusClass = 'status-dot-ready';
+                tomatoCountText = '第1个番茄';
         }
         
         this.elements.statusText.textContent = statusText;
         this.elements.statusDot.classList.add(statusClass);
+        this.elements.tomatoCount.textContent = tomatoCountText;
     }
     
     // 更新时间显示
