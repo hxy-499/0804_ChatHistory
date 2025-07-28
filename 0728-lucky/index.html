@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>年会抽奖系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 自定义动画 */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(255, 215, 0, 0.8); }
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.2); }
+        }
+        
+        @keyframes rolling {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-50px); }
+        }
+        
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .glow-animation {
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        .sparkle-animation {
+            animation: sparkle 1.5s ease-in-out infinite;
+        }
+        
+        .rolling-animation {
+            animation: rolling 0.1s linear infinite;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-glow {
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        /* 粒子背景效果 */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            opacity: 0.7;
+            animation: particleFloat 4s linear infinite;
+        }
+        
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) translateX(0px);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen text-white overflow-x-hidden">
+    <!-- 粒子背景 -->
+    <div class="particles" id="particles"></div>
+    
+    <!-- 主容器 -->
+    <div class="relative z-10 container mx-auto px-4 py-8">
+        <!-- 标题区域 -->
+        <header class="text-center mb-12 animate-in fade-in zoom-in duration-1000">
+            <div class="float-animation">
+                <h1 class="text-6xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
+                    <i class="fas fa-crown mr-4"></i>
+                    年会抽奖大转盘
+                    <i class="fas fa-crown ml-4"></i>
+                </h1>
+            </div>
+            <p class="text-xl opacity-90 sparkle-animation">
+                <i class="fas fa-gift mr-2"></i>
+                准备好迎接幸运时刻了吗？
+                <i class="fas fa-gift ml-2"></i>
+            </p>
+        </header>
+
+        <!-- 主要内容区域 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- 左侧：参与人员区域 -->
+            <div class="lg:col-span-1">
+                <div class="card-glow bg-white bg-opacity-10 rounded-2xl p-6 animate-in slide-in-from-left duration-1000 delay-300">
+                    <h2 class="text-2xl font-bold mb-4 text-center">
+                        <i class="fas fa-users text-blue-400 mr-2"></i>
+                        参与人员
+                    </h2>
+                    <div class="mb-4">
+                        <input type="text" id="nameInput" 
+                               placeholder="输入姓名..." 
+                               class="w-full px-4 py-2 rounded-lg bg-white bg-opacity-20 border border-white border-opacity-30 text-white placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                        <button onclick="addParticipant()" 
+                                class="w-full mt-2 px-4 py-2 bg-gradient-to-r from-green-400 to-blue-500 rounded-lg font-semibold hover:from-green-500 hover:to-blue-600 transition-all duration-300 transform hover:scale-105">
+                            <i class="fas fa-plus mr-2"></i>添加参与者
+                        </button>
+                    </div>
+                    <div class="max-h-64 overflow-y-auto">
+                        <ul id="participantList" class="space-y-2">
+                            <!-- 参与者列表将在这里动态生成 -->
+                        </ul>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <span class="text-lg font-semibold">
+                            总人数: <span id="totalCount" class="text-yellow-400">0</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 中间：抽奖区域 -->
+            <div class="lg:col-span-1">
+                <div class="card-glow bg-white bg-opacity-10 rounded-2xl p-8 text-center animate-in fade-in zoom-in duration-1000 delay-500">
+                    <!-- 奖项选择 -->
+                    <div class="mb-6">
+                        <label class="block text-lg font-semibold mb-3">选择奖项:</label>
+                        <select id="prizeSelect" class="w-full px-4 py-2 rounded-lg bg-white bg-opacity-20 border border-white border-opacity-30 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                            <option value="一等奖" style="color: black;">🏆 一等奖</option>
+                            <option value="二等奖" style="color: black;">🥈 二等奖</option>
+                            <option value="三等奖" style="color: black;">🥉 三等奖</option>
+                            <option value="特别奖" style="color: black;">🌟 特别奖</option>
+                            <option value="幸运奖" style="color: black;">🍀 幸运奖</option>
+                        </select>
+                    </div>
+
+                    <!-- 抽奖显示区域 -->
+                    <div class="mb-8">
+                        <div class="glow-animation bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl p-8 mb-6">
+                            <div id="drawDisplay" class="text-4xl font-bold h-16 flex items-center justify-center">
+                                <i class="fas fa-star sparkle-animation mr-2"></i>
+                                点击开始抽奖
+                                <i class="fas fa-star sparkle-animation ml-2"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 控制按钮 -->
+                    <div class="space-y-4">
+                        <button id="drawBtn" onclick="startDraw()" 
+                                class="w-full px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl font-bold text-xl text-gray-800 hover:from-yellow-500 hover:to-orange-600 transition-all duration-300 transform hover:scale-105 glow-animation">
+                            <i class="fas fa-play mr-2"></i>
+                            开始抽奖
+                        </button>
+                        <button onclick="resetDraw()" 
+                                class="w-full px-6 py-3 bg-gradient-to-r from-gray-400 to-gray-600 rounded-xl font-semibold hover:from-gray-500 hover:to-gray-700 transition-all duration-300 transform hover:scale-105">
+                            <i class="fas fa-redo mr-2"></i>
+                            重置抽奖
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：中奖结果区域 -->
+            <div class="lg:col-span-1">
+                <div class="card-glow bg-white bg-opacity-10 rounded-2xl p-6 animate-in slide-in-from-right duration-1000 delay-700">
+                    <h2 class="text-2xl font-bold mb-4 text-center">
+                        <i class="fas fa-trophy text-yellow-400 mr-2"></i>
+                        中奖名单
+                    </h2>
+                    <div class="max-h-80 overflow-y-auto">
+                        <div id="winnersList" class="space-y-3">
+                            <div class="text-center text-gray-300 py-8">
+                                <i class="fas fa-gift text-4xl mb-2"></i>
+                                <p>还没有中奖者<br>快来开始抽奖吧！</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="exportResults()" 
+                            class="w-full mt-4 px-4 py-2 bg-gradient-to-r from-purple-400 to-blue-500 rounded-lg font-semibold hover:from-purple-500 hover:to-blue-600 transition-all duration-300 transform hover:scale-105">
+                        <i class="fas fa-download mr-2"></i>
+                        导出结果
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部说明 -->
+        <footer class="text-center mt-12 animate-in fade-in duration-1000 delay-1000">
+            <p class="text-lg opacity-80">
+                <i class="fas fa-heart text-red-400 mr-2"></i>
+                祝愿大家在新的一年里工作顺利，心想事成！
+                <i class="fas fa-heart text-red-400 ml-2"></i>
+            </p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
