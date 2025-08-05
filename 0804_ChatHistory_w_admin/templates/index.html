@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>古月今语 - 与历史人物对话</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 古风字体 */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        /* 古风色彩主题 */
+        .ancient-bg {
+            background: linear-gradient(135deg, #faf8f1 0%, #f0ebe5 100%);
+        }
+        
+        .ancient-border {
+            border-color: #d4c5a9;
+        }
+        
+        .ancient-text {
+            color: #5a4a3a;
+        }
+        
+        .ancient-accent {
+            color: #8b4513;
+        }
+        
+        /* 打字机效果 */
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        
+        .typing-effect {
+            overflow: hidden;
+            white-space: nowrap;
+            animation: typing 2s steps(30, end);
+        }
+        
+        /* 毛笔效果 */
+        .brush-effect {
+            text-shadow: 1px 1px 2px rgba(139, 69, 19, 0.3);
+        }
+        
+        /* 打字机效果 */
+        .typewriter-cursor {
+            /* 移除闪烁动画，保持不可见 */
+            opacity: 0;
+            color: #8b4513;
+        }
+        
+        /* 毛笔书写动画 */
+        @keyframes brushWriting {
+            0% { 
+                transform: translateX(0) rotate(0deg); 
+                opacity: 0.8; 
+            }
+            25% { 
+                transform: translateX(3px) rotate(2deg); 
+                opacity: 1; 
+            }
+            50% { 
+                transform: translateX(1px) rotate(-1deg); 
+                opacity: 0.9; 
+            }
+            75% { 
+                transform: translateX(2px) rotate(1deg); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: translateX(0) rotate(0deg); 
+                opacity: 0.8; 
+            }
+        }
+        
+        .brush-container {
+            display: flex;
+            align-items: center;
+            margin-right: 8px;
+        }
+        
+        .thinking-message {
+            background: linear-gradient(45deg, #faf8f1, #f0ebe5);
+        }
+        
+        /* 毛笔闪现动画 */
+        .brush-flash {
+            display: inline-block;
+            margin-left: 2px;
+        }
+        
+        @keyframes brushFlash {
+            0% { 
+                opacity: 0;
+                transform: translateY(-3px) scale(0.6) rotate(-10deg);
+            }
+            30% { 
+                opacity: 0.8;
+                transform: translateY(-1px) scale(1.0) rotate(0deg);
+            }
+            70% { 
+                opacity: 1;
+                transform: translateY(0) scale(1.1) rotate(5deg);
+            }
+            100% { 
+                opacity: 0;
+                transform: translateY(2px) scale(0.7) rotate(10deg);
+            }
+        }
+        
+        /* 滚动条样式 */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #d4c5a9;
+            border-radius: 3px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #8b4513;
+        }
+        
+        /* 消息气泡 */
+        .message-bubble {
+            animation: fadeInUp 0.5s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* 角色卡片 */
+        .character-card {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .character-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(139, 69, 19, 0.2);
+        }
+        
+        .character-card.selected {
+            border-color: #8b4513;
+            box-shadow: 0 0 0 2px rgba(139, 69, 19, 0.2);
+        }
+        
+        /* 按钮样式 */
+        .ancient-btn {
+            background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .ancient-btn:hover {
+            background: linear-gradient(135deg, #a0522d 0%, #8b4513 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(139, 69, 19, 0.3);
+        }
+        
+        .ancient-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body class="ancient-text">
+    <div class="flex h-screen bg-gradient-to-br from-orange-50 to-amber-50">
+        <!-- 左侧面板 -->
+        <div class="w-80 ancient-bg border-r ancient-border shadow-lg flex flex-col">
+            <!-- 标题 -->
+            <div class="p-6 border-b ancient-border flex-shrink-0">
+                <h1 class="text-2xl font-bold ancient-accent brush-effect text-center">古月今语</h1>
+                <p class="text-sm text-center mt-2 ancient-text opacity-75">今人不见古时月，今月曾经照古人</p>
+            </div>
+            
+            <!-- 添加人物按钮 -->
+            <div class="p-4 border-b ancient-border flex-shrink-0">
+                <button id="add-character-btn" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-medium transition-colors">
+                    <i class="fas fa-plus mr-2"></i>添加人物
+                </button>
+            </div>
+            
+            <!-- 中间：可滚动的人物列表 -->
+            <div class="flex-1 overflow-hidden">
+                <div class="h-full overflow-y-auto custom-scrollbar">
+                    <div class="p-4">
+                        <h2 class="text-lg font-semibold mb-4 ancient-accent">选择历史人物</h2>
+                        <div id="characters-list" class="space-y-3">
+                            <!-- 角色列表将在这里动态加载 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 底部：API配置 -->
+            <div class="border-t ancient-border flex-shrink-0">
+                <div class="p-4">
+                    <button id="config-btn" class="w-full ancient-btn py-2 px-4 rounded-lg font-medium">
+                        <i class="fas fa-cog mr-2"></i>API配置
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 右侧对话区域 -->
+        <div class="flex-1 flex flex-col">
+            <!-- 对话标题栏 -->
+            <div class="p-4 ancient-bg border-b ancient-border shadow-sm">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div id="current-character-avatar" class="w-10 h-10 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 flex items-center justify-center">
+                            <i class="fas fa-user-tie text-white"></i>
+                        </div>
+                        <div>
+                            <h2 id="current-character-name" class="font-semibold ancient-accent">请选择历史人物</h2>
+                            <p id="current-character-desc" class="text-sm ancient-text opacity-75">与古代智者对话</p>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button id="generate-image-btn" class="px-3 py-1 ancient-btn rounded text-sm" disabled title="自定义角色形象描述">
+                            <i class="fas fa-palette mr-1"></i>定制形象
+                        </button>
+                        <button id="clear-chat-btn" class="px-3 py-1 bg-gray-500 text-white rounded text-sm hover:bg-gray-600">
+                            <i class="fas fa-eraser mr-1"></i>清空对话
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 对话消息区域 -->
+            <div id="chat-messages" class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4">
+                <div class="text-center ancient-text opacity-50">
+                    <i class="fas fa-comments text-3xl mb-2"></i>
+                    <p>请选择一位历史人物开始对话</p>
+                </div>
+            </div>
+            
+            <!-- 输入区域 -->
+            <div class="p-4 ancient-bg border-t ancient-border">
+                <div class="flex space-x-3">
+                    <div class="flex-1">
+                        <textarea 
+                            id="message-input" 
+                            placeholder="请输入您想说的话..."
+                            class="w-full p-3 border ancient-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-amber-500 ancient-bg"
+                            rows="1"
+                            maxlength="1000"
+                            disabled
+                        ></textarea>
+                        <div class="text-xs ancient-text opacity-75 mt-1 text-right">
+                            <span id="char-count">0</span>/1000
+                        </div>
+                    </div>
+                    <button 
+                        id="send-btn" 
+                        class="px-6 py-3 ancient-btn rounded-lg font-medium disabled:opacity-50"
+                        disabled
+                    >
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- API配置模态框 -->
+    <div id="config-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 ancient-bg">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold ancient-accent">API配置</h3>
+                    <button id="close-config-btn" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <form id="config-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium ancient-text mb-2">阿里云百炼 API Key</label>
+                        <input 
+                            type="password" 
+                            id="api-key-input" 
+                            class="w-full p-3 border ancient-border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                            placeholder="请输入您的API Key"
+                            required
+                        >
+                        <p class="text-xs ancient-text opacity-75 mt-1">API Key将安全存储在本地</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium ancient-text mb-2">文本模型</label>
+                        <select 
+                            id="text-model-select" 
+                            class="w-full p-3 border ancient-border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        >
+                            <option value="qwen-plus">qwen-plus（推荐）</option>
+                            <option value="qwen-max">qwen-max</option>
+                            <option value="qwen-turbo">qwen-turbo</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium ancient-text mb-2">图像模型</label>
+                        <select 
+                            id="image-model-select" 
+                            class="w-full p-3 border ancient-border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        >
+                            <option value="wan2.2-t2i-flash">wan2.2-t2i-flash（推荐）</option>
+                            <option value="wan2.2-t2i">wan2.2-t2i</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex space-x-3 pt-4">
+                        <button type="submit" class="flex-1 ancient-btn py-2 px-4 rounded-lg font-medium">
+                            保存配置
+                        </button>
+                        <button type="button" id="test-api-btn" class="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-600">
+                            测试连接
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 右键菜单 -->
+    <div id="context-menu" class="fixed bg-white rounded-lg shadow-lg border ancient-border z-50 hidden">
+        <div class="py-2">
+            <button id="delete-character-btn" class="w-full px-4 py-2 text-left hover:bg-red-50 text-red-600 hover:text-red-700 transition-colors">
+                <i class="fas fa-trash mr-2"></i>移除此人
+            </button>
+        </div>
+    </div>
+    
+    <!-- 添加人物模态框 -->
+    <div id="add-character-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 ancient-bg">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold ancient-accent">添加历史人物</h3>
+                    <button id="close-add-character-btn" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <form id="add-character-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium ancient-text mb-2">人物姓名</label>
+                        <input 
+                            type="text" 
+                            id="character-name-input" 
+                            class="w-full p-3 border ancient-border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                            placeholder="例如：苏轼、辛弃疾、唐玄宗..."
+                            required
+                        >
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium ancient-text mb-2">历史朝代</label>
+                        <input 
+                            type="text" 
+                            id="character-dynasty-input" 
+                            class="w-full p-3 border ancient-border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                            placeholder="例如：宋代、元代、明代..."
+                            required
+                        >
+                    </div>
+                    
+                    <div class="bg-blue-50 p-3 rounded-lg border-l-4 border-blue-400">
+                        <p class="text-sm ancient-text">
+                            <i class="fas fa-info-circle text-blue-600 mr-2"></i>
+                            系统将验证人物真实性，确保历史准确
+                        </p>
+                    </div>
+                    
+                    <div class="bg-amber-50 p-3 rounded-lg border-l-4 border-amber-400">
+                        <p class="text-sm ancient-text">
+                            <i class="fas fa-magic text-amber-600 mr-2"></i>
+                            头像和详细简介将由AI自动生成
+                        </p>
+                    </div>
+                    
+                    <div class="flex space-x-3 pt-4">
+                        <button type="submit" class="flex-1 ancient-btn py-2 px-4 rounded-lg font-medium">
+                            <i class="fas fa-sparkles mr-2"></i>创建人物
+                        </button>
+                        <button type="button" id="cancel-add-character-btn" class="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg font-medium hover:bg-gray-600">
+                            取消
+                        </button>
+                    </div>
+                </form>
+                
+                <div id="character-generation-progress" class="mt-4 hidden">
+                    <div class="text-center">
+                        <i class="fas fa-spinner fa-spin text-2xl text-amber-600 mb-2"></i>
+                        <p class="text-sm ancient-text">AI正在生成人物信息...</p>
+                        <div class="mt-2 bg-gray-200 rounded-full h-2">
+                            <div id="progress-bar" class="bg-amber-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 图片生成模态框 -->
+    <div id="image-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 ancient-bg">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold ancient-accent">生成角色形象</h3>
+                    <button id="close-image-btn" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <form id="image-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium ancient-text mb-2">自定义形象描述</label>
+                        <textarea 
+                            id="image-prompt-input" 
+                            class="w-full p-3 border ancient-border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                            rows="3"
+                            placeholder="例如：穿着华丽龙袍的武则天、手持酒杯赏月的李白..."
+                        ></textarea>
+                        <p class="text-xs ancient-text opacity-75 mt-1">💡 提示：已有自动生成的基础形象，这里可以定制特殊场景或服饰</p>
+                    </div>
+                    
+                    <button type="submit" class="w-full ancient-btn py-2 px-4 rounded-lg font-medium">
+                        <i class="fas fa-palette mr-2"></i>定制生成
+                    </button>
+                </form>
+                
+                <div id="image-result" class="mt-4 hidden">
+                    <img id="generated-image" class="w-full rounded-lg" alt="生成的图片">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
