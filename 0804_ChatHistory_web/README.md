@@ -7,12 +7,13 @@
 ## 🔄 项目结构
 
 ```
-0804_ChatHistory_w_admin/
+0804_ChatHistory_web/
 ├── app.py                    # Flask主应用（含管理员路由）
 ├── models.py                 # 数据库模型（含管理员数据查询）
 ├── api_service.py            # 阿里云API服务
 ├── config.py                 # 配置管理
 ├── start.py                  # 启动脚本
+├── wsgi.py                   # WSGI入口文件（生产部署）
 ├── requirements.txt          # 依赖包
 ├── .env.example              # 环境配置示例
 ├── templates/
@@ -28,6 +29,10 @@
 ├── admin_guide.md           # 管理员系统使用指南
 ├── prompt_security.md      # 安全防护说明
 ├── chat.md                  # 对话规范示例文档
+├── deploy_guide.md          # 部署指南
+├── gunicorn.conf.py         # Gunicorn配置文件
+├── supervisor.conf          # Supervisor配置文件
+├── nginx.conf               # Nginx配置文件
 └── README.md                # 项目使用指南
 ```
 
@@ -47,10 +52,16 @@ pip install -r requirements.txt
 python3 start.py
 ```
 ### 访问应用
-   
-   - **用户端**：http://localhost:6888
-   - **管理员后台**：http://localhost:6888/admin
-   - **管理员默认账号**：admin / admin123 （建议修改）
+
+#### 本地开发环境
+- **用户端**：http://localhost:6888
+- **管理员后台**：http://localhost:6888/admin
+- **管理员默认账号**：admin / admin123 
+
+#### 线上演示环境
+- **🌐 用户端**：https://my.chathistory.site
+- **👑 管理员后台**：https://my.chathistory.site/admin
+- **管理员账号**：admin / admin123
 
 ## ✨ 项目特色
 
@@ -138,7 +149,9 @@ python3 start.py
 
 #### 登录方式
 
-1. **访问管理后台**：http://localhost:6888/admin
+1. **访问管理后台**：
+   - 本地环境：http://localhost:6888/admin
+   - 线上环境：https://my.chathistory.site/admin
 2. **默认账号**：admin / admin123
 3. **登录后进入管理仪表板**
 
