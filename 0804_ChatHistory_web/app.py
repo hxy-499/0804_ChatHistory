@@ -16,18 +16,31 @@ app = Flask(__name__)
 app.config.from_object(Config)
 app.secret_key = os.environ.get('SECRET_KEY', 'guyuejinyu-secret-key-2024')
 
+# 会话配置
+app.config['PERMANENT_SESSION_LIFETIME'] = 86400 * 30  # 30天
+
 # 初始化数据库
 db = Database()
+
+def get_current_user_id():
+    """获取当前用户ID，确保用户隔离"""
+    if 'user_id' not in session:
+        session['user_id'] = str(uuid.uuid4())
+        session.permanent = True
+    return session['user_id']
 
 @app.route('/')
 def index():
     """主页面"""
+    # 确保用户有唯一ID
+    get_current_user_id()
     return render_template('index.html')
 
 @app.route('/api/characters')
 def get_characters():
-    """获取可用角色列表"""
-    characters = db.get_characters()
+    """获取可用角色列表（包含默认角色和用户自定义角色）"""
+    user_id = get_current_user_id()
+    characters = db.get_characters(user_id)
     return jsonify(characters)
 
 @app.route('/api/config', methods=['GET', 'POST'])
@@ -35,7 +48,7 @@ def api_config():
     """API配置管理"""
     if request.method == 'GET':
         # 获取当前配置（不返回完整API Key）
-        config = db.get_user_config(session.get('user_id', 'default'))
+        config = db.get_user_config(get_current_user_id())
         if config and config.get('api_key'):
             # 只显示API Key的前4位和后4位
             api_key = config['api_key']
@@ -44,7 +57,7 @@ def api_config():
     
     elif request.method == 'POST':
         data = request.get_json()
-        user_id = session.get('user_id', 'default')
+        user_id = get_current_user_id()
         
         # 验证API Key
         api_key = data.get('api_key', '').strip()
@@ -73,7 +86,7 @@ def api_config():
 def chat():
     """处理对话请求"""
     data = request.get_json()
-    user_id = session.get('user_id', 'default')
+    user_id = get_current_user_id()
     
     # 获取用户输入和当前角色
     user_message = data.get('message', '').strip()
@@ -153,7 +166,7 @@ def chat():
 def generate_image():
     """生成角色形象图片"""
     data = request.get_json()
-    user_id = session.get('user_id', 'default')
+    user_id = get_current_user_id()
     
     prompt = data.get('prompt', '').strip()
     character_id = data.get('character_id')
@@ -199,14 +212,14 @@ def generate_image():
 @app.route('/api/conversations')
 def get_conversations():
     """获取对话历史列表"""
-    user_id = session.get('user_id', 'default')
+    user_id = get_current_user_id()
     conversations = db.get_conversations(user_id)
     return jsonify(conversations)
 
 @app.route('/api/conversation/<conversation_id>')
 def get_conversation(conversation_id):
     """获取特定对话的详细内容"""
-    user_id = session.get('user_id', 'default')
+    user_id = get_current_user_id()
     messages = db.get_chat_history(conversation_id)
     return jsonify(messages)
 
@@ -214,7 +227,7 @@ def get_conversation(conversation_id):
 def add_character():
     """添加新的历史人物"""
     data = request.get_json()
-    user_id = session.get('user_id', 'default')
+    user_id = get_current_user_id()
     
     name = data.get('name', '').strip()
     dynasty = data.get('dynasty', '').strip()
@@ -290,7 +303,7 @@ def add_character():
             'system_prompt': f"{name}（{dynasty}），{description}。{style}"
         }
         
-        success = db.add_custom_character(character_data)
+        success = db.add_custom_character(character_data, user_id)
         if not success:
             return jsonify({'error': '保存角色失败'}), 500
         
@@ -318,7 +331,7 @@ def add_character():
 @app.route('/api/characters/<character_id>', methods=['DELETE'])
 def delete_character(character_id):
     """删除角色"""
-    user_id = session.get('user_id', 'default')
+    user_id = get_current_user_id()
     
     try:
         # 检查是否为自定义角色（只能删除自定义角色）
@@ -587,8 +600,4 @@ def admin_performance():
     return jsonify(performance)
 
 if __name__ == '__main__':
-    # 设置用户ID
-    if 'user_id' not in session:
-        session['user_id'] = str(uuid.uuid4())
-    
     app.run(debug=True, host='0.0.0.0', port=6888)

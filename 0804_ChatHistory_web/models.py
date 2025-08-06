@@ -57,6 +57,14 @@ class Database:
             cursor.execute("ALTER TABLE characters ADD COLUMN generated_avatar_url TEXT")
             print("已添加 generated_avatar_url 字段到 characters 表")
         
+        # 检查并添加user_id字段（用于角色隔离）
+        try:
+            cursor.execute("SELECT user_id FROM characters LIMIT 1")
+        except Exception:
+            # 如果字段不存在，添加它
+            cursor.execute("ALTER TABLE characters ADD COLUMN user_id TEXT")
+            print("已添加 user_id 字段到 characters 表，实现角色用户隔离")
+        
         # 对话表
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS conversations (
@@ -151,11 +159,26 @@ class Database:
         conn.commit()
         conn.close()
     
-    def get_characters(self):
-        """获取所有角色"""
+    def get_characters(self, user_id=None):
+        """获取角色列表（包含默认角色和用户自定义角色）"""
         conn = self.get_connection()
         cursor = conn.cursor()
-        cursor.execute('SELECT * FROM characters ORDER BY created_at')
+        
+        if user_id:
+            # 获取默认角色（user_id为空）和当前用户的自定义角色
+            cursor.execute('''
+                SELECT * FROM characters 
+                WHERE user_id IS NULL OR user_id = ? 
+                ORDER BY created_at
+            ''', (user_id,))
+        else:
+            # 如果没有提供user_id，只返回默认角色
+            cursor.execute('''
+                SELECT * FROM characters 
+                WHERE user_id IS NULL 
+                ORDER BY created_at
+            ''')
+        
         characters = [dict(row) for row in cursor.fetchall()]
         conn.close()
         return characters
@@ -271,22 +294,23 @@ class Database:
         conn.commit()
         conn.close()
     
-    def add_custom_character(self, character_data):
+    def add_custom_character(self, character_data, user_id):
         """添加自定义角色"""
         conn = self.get_connection()
         cursor = conn.cursor()
         
         try:
             cursor.execute('''
-                INSERT INTO characters (id, name, description, style, avatar_url, system_prompt)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO characters (id, name, description, style, avatar_url, system_prompt, user_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             ''', (
                 character_data['id'],
                 character_data['name'], 
                 character_data['description'],
                 character_data['style'],
                 character_data.get('avatar_url', ''),
-                character_data['system_prompt']
+                character_data['system_prompt'],
+                user_id
             ))
             
             conn.commit()
